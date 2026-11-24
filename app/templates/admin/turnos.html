@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, riesgo, csrf %}
+{% block titulo %}Turnos del consultorio{% endblock %}
+{% block contenido %}
+<h1>Turnos del consultorio</h1>
+
+<form method="get" class="fila filtro">
+  <label>Estado
+    <select name="estado" onchange="this.form.submit()">
+      <option value="">Todos</option>
+      {% for e in estados %}<option value="{{ e }}" {{ 'selected' if e == filtro }}>{{ e }}</option>{% endfor %}
+    </select>
+  </label>
+  <noscript><button class="btn btn-outline" type="submit">Filtrar</button></noscript>
+</form>
+
+<p class="muted">El <strong>riesgo de ausencia</strong> lo calcula el modelo de IA al reservar o reprogramar.</p>
+
+<div class="tabla-scroll">
+  <table>
+    <thead>
+      <tr><th>#</th><th>Fecha y hora</th><th>Paciente</th><th>Médico</th><th>Estado</th><th>Riesgo de ausencia</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      {% for t in turnos %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.fecha.strftime('%d/%m/%Y') }} {{ t.hora|hhmm }}</td>
+        <td>{{ t.paciente.nombre_completo }}</td>
+        <td>{{ t.medico.nombre_completo }}<br><small class="muted">{{ t.especialidad.nombre }}</small></td>
+        <td>{{ chip(t.estado) }}</td>
+        <td>{{ riesgo(t.prob_ausencia) }}</td>
+        <td>
+          {% if t.es_activo %}
+          <form method="post" action="{{ url_for('admin.cambiar_estado', turno_id=t.id, metodo='PATCH') }}" class="acciones-fila">
+            {{ csrf() }}
+            <button class="btn btn-chico" type="submit" name="estado" value="Atendido">Atendido</button>
+            <button class="btn btn-chico btn-coral" type="submit" name="estado" value="Ausente">Ausente</button>
+          </form>
+          {% elif t.estado == 'Cancelado' %}
+          <form method="post" action="{{ url_for('admin.eliminar', turno_id=t.id, metodo='DELETE') }}"
+                onsubmit="return confirm('¿Eliminar definitivamente este turno?');">
+            {{ csrf() }}
+            <button class="btn btn-chico btn-outline" type="submit">Eliminar</button>
+          </form>
+          {% else %}
+          <span class="muted">—</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="muted centrado">No hay turnos para mostrar.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

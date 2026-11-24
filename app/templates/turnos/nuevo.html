@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pasos %}
+{% block titulo %}Nuevo turno{% endblock %}
+{% block contenido %}
+<h1>Nuevo turno</h1>
+{{ pasos(1) }}
+
+<section class="tarjeta">
+  <h2>Especialidad</h2>
+  <form method="get" action="{{ url_for('turnos.nuevo') }}" class="fila">
+    <select name="especialidad_id" aria-label="Especialidad" required>
+      <option value="" disabled {{ 'selected' if not especialidad }}>Elegí una especialidad</option>
+      {% for e in especialidades %}
+      <option value="{{ e.id }}" {{ 'selected' if especialidad and especialidad.id == e.id }}>{{ e.nombre }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline" type="submit">Ver médicos</button>
+  </form>
+</section>
+
+{% if especialidad %}
+<section class="tarjeta">
+  <h2>Médicos disponibles</h2>
+  <form method="get" action="{{ url_for('turnos.horarios') }}">
+    <input type="hidden" name="especialidad_id" value="{{ especialidad.id }}">
+    {% for m in medicos %}
+    <label class="opcion">
+      <input type="radio" name="medico_id" value="{{ m.id }}" {{ 'required' if loop.first }}>
+      <span class="avatar">{{ m.nombre[0] }}{{ m.apellido[0] }}</span>
+      <span><strong>{{ m.nombre_completo }}</strong><br><small>{{ especialidad.nombre }} · {{ m.matricula }}</small></span>
+    </label>
+    {% endfor %}
+    <button class="btn btn-block" type="submit">Continuar</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}AgendaMed{% endblock %} · AgendaMed</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+</head>
+<body>
+  <header class="barra">
+    <div class="barra-interna">
+      <a class="marca" href="{{ url_for('main.index') }}">Agenda<span>Med</span></a>
+      <nav>
+        {% if current_user.is_authenticated %}
+          {% if current_user.es_admin %}
+            <a href="{{ url_for('admin.turnos') }}">Turnos</a>
+          {% else %}
+            <a href="{{ url_for('turnos.nuevo') }}">Nuevo turno</a>
+            <a href="{{ url_for('turnos.mis_turnos') }}">Mis turnos</a>
+          {% endif %}
+          <a href="{{ url_for('ia.predecir') }}">Predictor IA</a>
+          <form method="post" action="{{ url_for('auth.logout') }}" class="en-linea">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="enlace" type="submit">Salir ({{ current_user.nombre }})</button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Ingresar</a>
+          <a href="{{ url_for('auth.registro') }}">Registrarme</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    {% with mensajes = get_flashed_messages(with_categories=true) %}
+      {% for categoria, mensaje in mensajes %}
+        <div class="alerta alerta-{{ categoria }}" role="alert">{{ mensaje }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer class="pie">AgendaMed · Prototipo funcional · Análisis y Metodología de Sistemas · ACM4AV</footer>
+</body>
+</html>

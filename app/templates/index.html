@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<section class="hero">
+  <h1>Tus turnos médicos, sin llamadas</h1>
+  <p>Pedí, reprogramá y cancelá tu turno desde el celular o la computadora, a cualquier hora.</p>
+  {% if current_user.is_authenticated %}
+    {% if current_user.es_admin %}
+      <a class="btn btn-block" href="{{ url_for('admin.turnos') }}">Ver turnos del consultorio</a>
+    {% else %}
+      <a class="btn btn-block" href="{{ url_for('turnos.nuevo') }}">Pedir un turno</a>
+      <a class="btn btn-outline btn-block" href="{{ url_for('turnos.mis_turnos') }}">Ver mis turnos</a>
+    {% endif %}
+  {% else %}
+    <a class="btn btn-block" href="{{ url_for('auth.registro') }}">Crear mi cuenta</a>
+    <a class="btn btn-outline btn-block" href="{{ url_for('auth.login') }}">Ya tengo cuenta</a>
+  {% endif %}
+</section>
+
+<section class="tarjeta">
+  <h2>Reservá en 3 pasos</h2>
+  <ol class="lista-pasos">
+    <li><strong>Especialidad y médico.</strong> Elegí con quién querés atenderte.</li>
+    <li><strong>Día y horario.</strong> Solo ves los horarios que están libres.</li>
+    <li><strong>Confirmación.</strong> Revisás el resumen y listo.</li>
+  </ol>
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{
+  "modelo": "Regresión logística (scikit-learn)",
+  "registros_entrenamiento": 4800,
+  "registros_prueba": 1200,
+  "tasa_ausentismo": 0.1927,
+  "accuracy": 0.8075,
+  "accuracy_siempre_asiste": 0.8075,
+  "roc_auc": 0.6916,
+  "datos": "sintéticos (ver ml/generar_dataset.py)"
+}

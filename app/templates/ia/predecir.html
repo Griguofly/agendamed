@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+{% block titulo %}Predictor de ausentismo{% endblock %}
+{% block contenido %}
+<h1>Predictor de ausentismo</h1>
+<p class="muted">Ingresá los datos de un turno y el modelo estima la probabilidad de que el paciente <strong>no se presente</strong>.</p>
+
+{% for error in errores %}<div class="alerta alerta-error" role="alert">{{ error }}</div>{% endfor %}
+
+<form method="post" class="tarjeta formulario">
+  {{ csrf() }}
+  <label>Días entre la reserva y el turno <small>({{ rangos.dias_anticipacion[0] }} a {{ rangos.dias_anticipacion[1] }})</small>
+    <input type="number" name="dias_anticipacion" value="{{ datos.dias_anticipacion }}" min="{{ rangos.dias_anticipacion[0] }}" max="{{ rangos.dias_anticipacion[1] }}" required>
+  </label>
+  <div class="fila-doble">
+    <label>Hora del turno <small>({{ rangos.hora[0] }} a {{ rangos.hora[1] }} hs)</small>
+      <input type="number" name="hora" value="{{ datos.hora }}" min="{{ rangos.hora[0] }}" max="{{ rangos.hora[1] }}" required>
+    </label>
+    <label>Día de la semana
+      <select name="dia_semana">
+        {% for nombre in dias %}<option value="{{ loop.index0 }}" {{ 'selected' if datos.dia_semana|string == loop.index0|string }}>{{ nombre }}</option>{% endfor %}
+      </select>
+    </label>
+  </div>
+  <div class="fila-doble">
+    <label>Edad del paciente
+      <input type="number" name="edad" value="{{ datos.edad }}" min="{{ rangos.edad[0] }}" max="{{ rangos.edad[1] }}" required>
+    </label>
+    <label>Ausencias previas
+      <input type="number" name="ausencias_previas" value="{{ datos.ausencias_previas }}" min="{{ rangos.ausencias_previas[0] }}" max="{{ rangos.ausencias_previas[1] }}" required>
+    </label>
+  </div>
+  <button class="btn btn-block" type="submit">Calcular probabilidad</button>
+</form>
+
+{% if resultado %}
+<section class="tarjeta resultado resultado-{{ resultado.nivel }}">
+  <h2>Resultado</h2>
+  <p class="grande">{{ (resultado.probabilidad * 100)|round(0)|int }} %</p>
+  <div class="barra-prob"><span style="width: {{ (resultado.probabilidad * 100)|round(0)|int }}%"></span></div>
+  <p>Riesgo de ausencia: <strong>{{ resultado.nivel }}</strong>.
+    {% if resultado.nivel == 'alto' %}Conviene reforzar el recordatorio y confirmar el turno con el paciente.
+    {% elif resultado.nivel == 'medio' %}Un recordatorio 24 h antes ayuda a reducir el riesgo.
+    {% else %}Es poco probable que el paciente falte.{% endif %}
+  </p>
+</section>
+{% endif %}
+
+<section class="tarjeta nota">
+  <h2>Sobre el modelo</h2>
+  <p>{{ metricas.modelo or 'Regresión logística (scikit-learn)' }}, entrenado con
+    {{ metricas.registros_entrenamiento or '—' }} turnos <strong>sintéticos</strong> (no son datos reales de un consultorio).
+    {% if metricas.roc_auc %}AUC en datos de prueba: {{ metricas.roc_auc }}.{% endif %}
+    Es una estimación orientativa, no un diagnóstico.</p>
+  <p class="muted">También disponible como API: <code>POST /ia/api/predecir</code> (JSON, requiere sesión iniciada).</p>
+</section>
+{% endblock %}

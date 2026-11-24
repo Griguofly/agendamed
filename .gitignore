@@ -1,0 +1,23 @@
+# Secretos y configuración local: NUNCA se suben al repositorio
+.env
+.env.*
+!.env.example
+
+# Entorno virtual
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Base de datos local (SQLite)
+instance/
+*.db
+*.sqlite3
+
+# Editor / sistema
+.vscode/
+.idea/
+.DS_Store

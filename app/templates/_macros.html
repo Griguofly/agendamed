@@ -1,0 +1,26 @@
+{% macro csrf() -%}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{%- endmacro %}
+
+{% macro chip(estado) -%}
+<span class="chip chip-{{ estado|lower }}">{{ estado }}</span>
+{%- endmacro %}
+
+{% macro riesgo(prob) -%}
+{%- set nivel = prob|nivel_riesgo -%}
+{%- if nivel -%}
+<span class="riesgo riesgo-{{ nivel }}">{{ prob|porcentaje }} · {{ nivel }}</span>
+{%- else -%}
+<span class="muted">—</span>
+{%- endif -%}
+{%- endmacro %}
+
+{% macro pasos(actual) -%}
+<ol class="pasos" aria-label="Progreso de la reserva">
+  {% for n, nombre in [(1, 'Especialidad y médico'), (2, 'Día y horario'), (3, 'Confirmación')] %}
+  <li class="{{ 'hecho' if n < actual else ('actual' if n == actual else '') }}">
+    <span class="num">{{ n }}</span><span class="txt">{{ nombre }}</span>
+  </li>
+  {% endfor %}
+</ol>
+{%- endmacro %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pasos, csrf %}
+{% block titulo %}Confirmar turno{% endblock %}
+{% block contenido %}
+<h1>Confirmá tu turno</h1>
+{{ pasos(3) }}
+
+<section class="tarjeta">
+  <dl class="resumen">
+    <dt>Médico</dt><dd>{{ medico.nombre_completo }}</dd>
+    <dt>Especialidad</dt><dd>{{ especialidad.nombre }}</dd>
+    <dt>Fecha</dt><dd>{{ fecha|fecha_es }}</dd>
+    <dt>Hora</dt><dd>{{ hora|hhmm }} hs</dd>
+    <dt>Paciente</dt><dd>{{ current_user.nombre_completo }}</dd>
+  </dl>
+</section>
+
+<form method="post" action="{{ url_for('turnos.crear') }}">
+  {{ csrf() }}
+  <input type="hidden" name="especialidad_id" value="{{ especialidad.id }}">
+  <input type="hidden" name="medico_id" value="{{ medico.id }}">
+  <input type="hidden" name="fecha" value="{{ fecha.isoformat() }}">
+  <input type="hidden" name="hora" value="{{ hora|hhmm }}">
+  <button class="btn btn-block" type="submit">Confirmar turno</button>
+</form>
+<a class="btn btn-outline btn-block"
+   href="{{ url_for('turnos.horarios', especialidad_id=especialidad.id, medico_id=medico.id, fecha=fecha.isoformat()) }}">Volver</a>
+{% endblock %}

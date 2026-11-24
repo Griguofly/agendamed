@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+{% block titulo %}Crear cuenta{% endblock %}
+{% block contenido %}
+<h1>Crear mi cuenta</h1>
+<form method="post" class="tarjeta formulario">
+  {{ csrf() }}
+  <div class="fila-doble">
+    <label>Nombre
+      <input type="text" name="nombre" value="{{ datos.nombre }}" maxlength="60" required>
+    </label>
+    <label>Apellido
+      <input type="text" name="apellido" value="{{ datos.apellido }}" maxlength="60" required>
+    </label>
+  </div>
+  <div class="fila-doble">
+    <label>DNI
+      <input type="text" name="dni" value="{{ datos.dni }}" inputmode="numeric" placeholder="Sin puntos" required>
+    </label>
+    <label>Teléfono
+      <input type="tel" name="telefono" value="{{ datos.telefono }}" required>
+    </label>
+  </div>
+  <label>Email
+    <input type="email" name="email" value="{{ datos.email }}" autocomplete="username" required>
+  </label>
+  <label>Fecha de nacimiento
+    <input type="date" name="fecha_nacimiento" value="{{ datos.fecha_nacimiento }}" required>
+  </label>
+  <label>Contraseña <small>(mínimo 8 caracteres)</small>
+    <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+  </label>
+  <label>Repetir contraseña
+    <input type="password" name="password2" autocomplete="new-password" minlength="8" required>
+  </label>
+  <button class="btn btn-block" type="submit">Crear cuenta</button>
+  <p class="muted centrado">¿Ya tenés cuenta? <a href="{{ url_for('auth.login') }}">Ingresá</a></p>
+</form>
+{% endblock %}

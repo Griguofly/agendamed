@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, csrf %}
+{% block titulo %}Reprogramar turno{% endblock %}
+{% block contenido %}
+<h1>Reprogramar turno</h1>
+
+<section class="tarjeta">
+  <p>Turno actual: <strong>{{ turno.fecha|fecha_es }} · {{ turno.hora|hhmm }} hs</strong> {{ chip(turno.estado) }}</p>
+  <p>{{ turno.medico.nombre_completo }} · {{ turno.especialidad.nombre }}</p>
+  <h2>Elegí el nuevo día</h2>
+  <div class="dias">
+    {% for d in dias %}
+    <a class="dia {{ 'sel' if fecha == d }}" href="{{ url_for('turnos.reprogramar', turno_id=turno.id, fecha=d.isoformat()) }}">
+      <small>{{ d|dia_corto }}</small><strong>{{ d.day }}</strong>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% if fecha %}
+<section class="tarjeta">
+  <h2>Horarios del {{ fecha|fecha_es }}</h2>
+  {% if libres %}
+  <form method="post" action="{{ url_for('turnos.actualizar', turno_id=turno.id, metodo='PUT') }}">
+    {{ csrf() }}
+    <input type="hidden" name="fecha" value="{{ fecha.isoformat() }}">
+    <div class="horarios">
+      {% for h in libres %}
+      <button class="hora" type="submit" name="hora" value="{{ h|hhmm }}">{{ h|hhmm }}</button>
+      {% endfor %}
+    </div>
+    <p class="muted">Al tocar un horario, el turno se reprograma en ese momento.</p>
+  </form>
+  {% else %}
+  <p class="muted">No hay horarios libres ese día. Probá con otro.</p>
+  {% endif %}
+</section>
+{% endif %}
+
+<a class="btn btn-outline btn-block" href="{{ url_for('turnos.mis_turnos') }}">Volver a mis turnos</a>
+{% endblock %}

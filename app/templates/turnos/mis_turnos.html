@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import chip, csrf %}
+{% block titulo %}Mis turnos{% endblock %}
+{% block contenido %}
+<h1>Mis turnos</h1>
+<a class="btn btn-block" href="{{ url_for('turnos.nuevo') }}">Pedir un turno</a>
+
+<h2>Próximos</h2>
+{% for t in proximos %}
+<article class="tarjeta turno">
+  <div class="turno-datos">
+    <strong>{{ t.fecha|fecha_es }} · {{ t.hora|hhmm }} hs</strong> {{ chip(t.estado) }}
+    <p>{{ t.medico.nombre_completo }} · {{ t.especialidad.nombre }}</p>
+  </div>
+  <div class="acciones">
+    <a class="btn btn-outline" href="{{ url_for('turnos.reprogramar', turno_id=t.id) }}">Reprogramar</a>
+    <form method="post" action="{{ url_for('turnos.cancelar', turno_id=t.id, metodo='DELETE') }}"
+          onsubmit="return confirm('¿Querés cancelar este turno?');">
+      {{ csrf() }}
+      <button class="btn btn-coral" type="submit">Cancelar</button>
+    </form>
+  </div>
+</article>
+{% else %}
+<p class="muted">No tenés turnos próximos.</p>
+{% endfor %}
+
+<h2>Historial</h2>
+{% for t in historial %}
+<article class="tarjeta turno turno-pasado">
+  <div class="turno-datos">
+    <strong>{{ t.fecha|fecha_es }} · {{ t.hora|hhmm }} hs</strong> {{ chip(t.estado) }}
+    <p>{{ t.medico.nombre_completo }} · {{ t.especialidad.nombre }}</p>
+  </div>
+</article>
+{% else %}
+<p class="muted">Todavía no tenés turnos anteriores.</p>
+{% endfor %}
+{% endblock %}

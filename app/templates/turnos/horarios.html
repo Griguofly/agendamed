@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pasos %}
+{% block titulo %}Día y horario{% endblock %}
+{% block contenido %}
+<h1>Nuevo turno</h1>
+{{ pasos(2) }}
+
+<section class="tarjeta">
+  <p><strong>{{ medico.nombre_completo }}</strong> · {{ especialidad.nombre }}</p>
+  <h2>Día</h2>
+  <div class="dias">
+    {% for d in dias %}
+    <a class="dia {{ 'sel' if fecha == d }}"
+       href="{{ url_for('turnos.horarios', especialidad_id=especialidad.id, medico_id=medico.id, fecha=d.isoformat()) }}">
+      <small>{{ d|dia_corto }}</small><strong>{{ d.day }}</strong>
+    </a>
+    {% endfor %}
+  </div>
+  <form method="get" action="{{ url_for('turnos.horarios') }}" class="fila otra-fecha">
+    <input type="hidden" name="especialidad_id" value="{{ especialidad.id }}">
+    <input type="hidden" name="medico_id" value="{{ medico.id }}">
+    <label>Otra fecha
+      <input type="date" name="fecha" min="{{ min_fecha.isoformat() }}" max="{{ max_fecha.isoformat() }}"
+             value="{{ fecha.isoformat() if fecha }}" required>
+    </label>
+    <button class="btn btn-outline" type="submit">Ver horarios</button>
+  </form>
+</section>
+
+{% if fecha %}
+<section class="tarjeta">
+  <h2>Horarios del {{ fecha|fecha_es }}</h2>
+  {% if libres %}
+  <div class="horarios">
+    {% for h in libres %}
+    <a class="hora"
+       href="{{ url_for('turnos.confirmar', especialidad_id=especialidad.id, medico_id=medico.id, fecha=fecha.isoformat(), hora=h|hhmm) }}">{{ h|hhmm }}</a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">No hay horarios libres ese día. Probá con otro día o con otro médico.</p>
+  {% endif %}
+</section>
+{% endif %}
+
+<a class="btn btn-outline btn-block" href="{{ url_for('turnos.nuevo', especialidad_id=especialidad.id) }}">Volver</a>
+{% endblock %}
