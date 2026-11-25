@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block titulo %}Inicio{% endblock %}
+{% block clase_main %}centrar{% endblock %}
 {% block contenido %}
 <section class="hero">
-  <h1>Tus turnos médicos, sin llamadas</h1>
+    <h1>Tus turnos médicos, <span class="resalte">sin llamadas</span></h1>
   <p>Pedí, reprogramá y cancelá tu turno desde el celular o la computadora, a cualquier hora.</p>
   {% if current_user.is_authenticated %}
     {% if current_user.es_admin %}

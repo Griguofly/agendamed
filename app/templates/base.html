@@ -31,7 +31,11 @@
     </div>
   </header>
 
-  <main class="contenedor">
+    <main class="contenedor {% block clase_main %}{% endblock %}">
+          {% if request.endpoint not in ['main.index', 'turnos.horarios', 'turnos.confirmar', 'turnos.reprogramar'] %}
+      <a class="btn btn-outline volver" href="{{ url_for('main.index') }}"
+         onclick="if (history.length > 1) { history.back(); return false; }">← Volver</a>
+    {% endif %}
     {% with mensajes = get_flashed_messages(with_categories=true) %}
       {% for categoria, mensaje in mensajes %}
         <div class="alerta alerta-{{ categoria }}" role="alert">{{ mensaje }}</div>
